@@ -1,100 +1,108 @@
 <!DOCTYPE html>
 <html>
-  <style>
-    #form-content {
-      box-shadow: 0px 10px 25px lightgrey;
-      width: 800px;
-      min-width: 800px;
-      margin: auto;
-      min-height: 200px;
-      margin-top: 15vh;
-      padding: 40px;
-    }
+  <head>
+    <title>JC Invoice Builder</title>
+    <style>
+      body {
+        background: url('background.jpeg');
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
 
-    .content-left {
-      width: 70%;
-      display: inline-block;
-      vertical-align: top;
-    }
+      #form-content {
+        box-shadow: 0px 10px 25px lightgrey;
+        width: 900px;
+        min-width: 900px;
+        margin: auto;
+        min-height: 200px;
+        margin-top: 15vh;
+        padding: 40px;
+        background: white;
+      }
 
-    .content-right {
-      width: 29%;
-      display: inline-block;
-      text-align: right;
-      vertical-align: top;
-    }
+      .content-left {
+        width: 70%;
+        display: inline-block;
+        vertical-align: top;
+      }
 
-    .form-input {
-      border: 1px solid transparent;
-      padding: 0px;
-    }
+      .content-right {
+        width: 29%;
+        display: inline-block;
+        text-align: right;
+        vertical-align: top;
+      }
 
-    .content-left .form-input {
-      width: 100%;
-    }
+      .form-input {
+        border: 1px solid transparent;
+        padding: 0px;
+      }
 
-    .form-amount {
-      text-align: right;
-    }
+      .content-left .form-input {
+        width: 100%;
+      }
 
-    .header-content {
-      font-size: 30px;
-    }
+      .form-amount {
+        text-align: right;
+      }
 
-    .descriptions {
-      border: 1px solid black;
-      margin-top: 30px;
-    }
+      .header-content {
+        font-size: 30px;
+      }
 
-    .content-header {
-      background: lightgrey;
-    }
+      .descriptions {
+        border: 1px solid black;
+        margin-top: 30px;
+      }
 
-    .content-item {
-      padding: 10px;
-      border-bottom: 1px solid lightgrey;
-      position: relative;
-    }
+      .content-header {
+        background: lightgrey;
+      }
 
-    .content-item-right {
-      float: right;
-    }
+      .content-item {
+        padding: 10px;
+        border-bottom: 1px solid lightgrey;
+        position: relative;
+      }
 
-    .bold-content {
-      font-weight: bolder;
-    }
+      .content-item-right {
+        float: right;
+      }
 
-    
-    .download-btn {
-      padding: 10px 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
+      .bold-content {
+        font-weight: bolder;
+      }
 
-    .plus-item-div {
-      background: transparent;
-      border-radius: 50%;
-      width: 100%;
-      height: 10px;
-      position: absolute;
-      text-align: center;
-      bottom: -1px;
-      z-index: 999;
-    }
+      
+      .download-btn {
+        padding: 10px 15px;
+        font-size: 20px;
+        font-weight: bold;
+      }
 
-    .delete-icon-div {
-      width: 20px;
-      height: 20px;
-      background: white;
-      display: inline-block;
-      position: absolute;
-      right: -15px;
-      top: 12px;
-    }
+      .plus-item-div {
+        background: transparent;
+        border-radius: 50%;
+        width: 100%;
+        height: 10px;
+        position: absolute;
+        text-align: center;
+        bottom: -1px;
+        z-index: 999;
+      }
 
-    
+      .delete-icon-div {
+        width: 20px;
+        height: 20px;
+        background: white;
+        display: inline-block;
+        position: absolute;
+        right: -15px;
+        top: 12px;
+      } 
 
-  </style>
+    </style>
+  </head>
   <body>
     <div id="app">
       <div id="form-content">
@@ -143,13 +151,16 @@
       </div>
 
       <div style="text-align: center; margin-top: 30px;">
-        <button class="download-btn">Download</button>
+        <button class="download-btn" @click="createPDFfromHTML">Download</button>
       </div>
 
     </div>
   </body>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+  <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
   <script>
     var app = new Vue({
       el: '#app',
@@ -186,6 +197,28 @@
         },
         deleteItem(index) {
           this.invoiceItems.splice(index, 1);
+        },
+        createPDFfromHTML() {
+          var HTML_Width = $("#form-content").width();
+          var HTML_Height = $("#form-content").height();
+          var top_left_margin = 15;
+          var PDF_Width = HTML_Width + (top_left_margin * 2);
+          var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+          var canvas_image_width = HTML_Width;
+          var canvas_image_height = HTML_Height;
+
+          var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+          html2canvas($("#form-content")[0]).then(function (canvas) {
+              var imgData = canvas.toDataURL("image/jpeg", 1.0);
+              var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+              pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+              for (var i = 1; i <= totalPDFPages; i++) { 
+                  pdf.addPage(PDF_Width, PDF_Height);
+                  pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+              }
+              pdf.save("invoice-invoiceNumber.pdf");
+          });
         }
       }
     })
