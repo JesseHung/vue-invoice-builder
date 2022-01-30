@@ -66,6 +66,11 @@
         position: relative;
       }
 
+      .content-item span {
+        display: inline-block;
+        min-width: 40px;
+      }
+
       .content-item-right {
         float: right;
       }
@@ -102,36 +107,42 @@
         top: 12px;
       } 
 
+      span:focus {
+        border: none;
+        outline: none;
+        color: grey;
+      }
+
     </style>
   </head>
   <body>
     <div id="app">
       <div id="form-content">
         <div class="content-left">
-          <span class="header-content form-input">My Company Name</span><br>
-          <span class="form-input">My Company's address & email</span>
+          <span class="header-content form-input" contenteditable="true">My Company Name</span><br>
+          <span class="form-input" contenteditable="true">My Company's address & email</span>
           <br><br><br><br><br>
           <span style="font-weight: bold; font-size: 20px;">Bill to:</span><br>
-          <span class="form-input">Recipient's address & email</span>
+          <span class="form-input" contenteditable="true">Recipient's address & email</span>
         </div>
 
         <div class="content-right">
           <span style="font-size: 30px; font-weight: bolder">INVOICE</span><br>
-          <span class="form-input">Date: Invoice date</span><br>
-          <span class="form-input">Invoice #:Serial Number</span>
+          <span class="form-input">Date: <span contenteditable="true">Invoice date</span></span><br>
+          <span class="form-input">Invoice #: <span contenteditable="true">Serial Number</span></span>
         </div>
         
         <div class="descriptions">
           <div class="content-header content-item">
             <span>Descriptions</span>
-            <span class="content-item-right bold-content">Amount (Currency)</span>
+            <span class="content-item-right bold-content">Amount (<span contenteditable="true">Currency</span>)</span>
           </div>
 
           <!-- VUE Loop Item -->
           <div v-for="(item, index) in invoiceItems" @mouseover="showPlusIcon(true, index)" @mouseleave="showPlusIcon(false, index)" style="position: relative">
             <div class="content-item">
-              <span class="form-input" style="width: 75%; padding: 0px; vertical-align: top; font-size: 15px;">{{ item.description }}</span>
-              <span class="content-item-right form-amount form-input" style="width: 20%; padding: 0px; vertical-align: top; font-size: 15px;">${{ item.amount }}</span>
+              <span class="form-input" style="width: 75%; padding: 0px; vertical-align: top; font-size: 15px;" contenteditable="true" contenteditable="true">{{ item.description }}</span>
+              <span class="content-item-right form-amount form-input" style="width: 20%; padding: 0px; vertical-align: top; font-size: 15px;">$<span contenteditable="true">{{ item.amount }}</span></span>
               <div class="delete-icon-div" v-if="deleteIcon === index" @click="deleteItem(index)">
                 <img src="delete-icon.png" alt="delete-icon" style="height: 20px;" />
               </div>
