@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    #form-content {
+      box-shadow: 0px 10px 25px lightgrey;
+      width: 800px;
+      min-width: 800px;
+      margin: auto;
+      min-height: 200px;
+      margin-top: 15vh;
+      padding: 40px;
+    }
+
+    .content-left {
+      width: 70%;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .content-right {
+      width: 29%;
+      display: inline-block;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .form-input {
+      border: 1px solid transparent;
+      padding: 0px;
+    }
+
+    .content-left .form-input {
+      width: 100%;
+    }
+
+    .form-amount {
+      text-align: right;
+    }
+
+    .header-content {
+      font-size: 30px;
+    }
+
+    .descriptions {
+      border: 1px solid black;
+      margin-top: 30px;
+    }
+
+    .content-header {
+      background: lightgrey;
+    }
+
+    .content-item {
+      padding: 10px;
+      border-bottom: 1px solid lightgrey;
+      position: relative;
+    }
+
+    .content-item-right {
+      float: right;
+    }
+
+    .bold-content {
+      font-weight: bolder;
+    }
+
+    
+    .download-btn {
+      padding: 10px 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .plus-item-div {
+      background: transparent;
+      border-radius: 50%;
+      width: 100%;
+      height: 10px;
+      position: absolute;
+      text-align: center;
+      bottom: -1px;
+      z-index: 999;
+    }
+
+    .delete-icon-div {
+      width: 20px;
+      height: 20px;
+      background: white;
+      display: inline-block;
+      position: absolute;
+      right: -15px;
+      top: 12px;
+    }
+
+    
+
+  </style>
+  <body>
+    <div id="app">
+      <div id="form-content">
+        <div class="content-left">
+          <span class="header-content form-input">My Company Name</span><br>
+          <span class="form-input">My Company's address & email</span>
+          <br><br><br><br><br>
+          <span style="font-weight: bold; font-size: 20px;">Bill to:</span><br>
+          <span class="form-input">Recipient's address & email</span>
+        </div>
+
+        <div class="content-right">
+          <span style="font-size: 30px; font-weight: bolder">INVOICE</span><br>
+          <span class="form-input">Date: Invoice date</span><br>
+          <span class="form-input">Invoice #:Serial Number</span>
+        </div>
+        
+        <div class="descriptions">
+          <div class="content-header content-item">
+            <span>Descriptions</span>
+            <span class="content-item-right bold-content">Amount (Currency)</span>
+          </div>
+
+          <!-- VUE Loop Item -->
+          <div v-for="(item, index) in invoiceItems" @mouseover="showPlusIcon(true, index)" @mouseleave="showPlusIcon(false, index)" style="position: relative">
+            <div class="content-item">
+              <span class="form-input" style="width: 75%; padding: 0px; vertical-align: top; font-size: 15px;">{{ item.description }}</span>
+              <span class="content-item-right form-amount form-input" style="width: 20%; padding: 0px; vertical-align: top; font-size: 15px;">${{ item.amount }}</span>
+              <div class="delete-icon-div" v-if="deleteIcon === index" @click="deleteItem(index)">
+                <img src="delete-icon.png" alt="delete-icon" style="height: 20px;" />
+              </div>
+            </div>
+            <div class="plus-item-div" v-if="plusItemDiv === index">
+              <img src="plus-icon.png" alt="plus-icon" style="height: 20px;" @click="addItem(index)" />
+            </div>
+          </div>
+          <!-- VUE Loop Item -->
+
+          <div class="content-footer content-item">
+            <span>&nbsp;</span>
+            <span class="content-item-right bold-content">Total: ${{ total }}</span>
+          </div>
+
+        </div>
+        
+      </div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <button class="download-btn">Download</button>
+      </div>
+
+    </div>
+  </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        invoiceItems: [
+          {
+            description: 'Monthly Salary - October',
+            amount: '5000.00'
+          }
+        ],
+        plusItemDiv: false,
+        deleteIcon: null,
+      },
+      computed: {
+        total() {
+          return this.invoiceItems.reduce((total, item) => total += parseFloat(item.amount), 0);
+        }
+      },
+      methods: {
+        addItem(index){
+          const newDescription = {
+            description: "Item's description" + index,
+            amount: "0.00"
+          };
+
+          this.invoiceItems.splice(index + 1, 0, newDescription)
+        },
+        lastItem(index) {
+          return index === this.invoiceItems.length - 1;
+        },
+        showPlusIcon(active_bool, index){
+          this.plusItemDiv = active_bool ? index : null;
+          this.deleteIcon = active_bool ? index : null;
+        },
+        deleteItem(index) {
+          this.invoiceItems.splice(index, 1);
+        }
+      }
+    })
+
+  </script>
+</html>
